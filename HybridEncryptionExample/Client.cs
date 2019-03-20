@@ -18,20 +18,10 @@ namespace HybridEncryptionExample
 
         public void SendMessage(Server server, string message)
         {
-            using (var aes = new AesCryptoServiceProvider())
-            {
-                aes.Key = Secret;
-                aes.GenerateIV();
+            byte[] iv = Helper.GenerateAesIv();
+            byte[] rsaEncryptedAesKey = Helper.RsaEncrypt(server.PublicParameters, Secret);
 
-                using (var rsa = new RSACryptoServiceProvider())
-                {
-                    rsa.ImportParameters(server.PublicParameters);
-
-                    server.ReceiveHybridMessage(rsa.Encrypt(Secret, false),
-                        aes.IV,
-                        Helper.AesEncrypt(Secret, aes.IV, message));
-                }
-            }
+            server.ReceiveHybridMessage(rsaEncryptedAesKey, iv, Helper.AesEncrypt(Secret, iv, message));
         }
     }
 }

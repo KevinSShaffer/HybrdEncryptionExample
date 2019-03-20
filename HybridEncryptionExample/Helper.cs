@@ -6,6 +6,36 @@ namespace HybridEncryptionExample
 {
     public class Helper
     {
+        public static byte[] GenerateAesIv()
+        {
+            using (var aes = new AesCryptoServiceProvider())
+            {
+                aes.GenerateIV();
+
+                return aes.IV;
+            }
+        }
+
+        public static byte[] RsaEncrypt(RSAParameters parameters, byte[] data)
+        {
+            using (var rsa = new RSACryptoServiceProvider())
+            {
+                rsa.ImportParameters(parameters);
+
+                return rsa.Encrypt(data, false);
+            }
+        }
+
+        public static byte[] RsaDecrypt(RSAParameters parameters, byte[] data)
+        {
+            using (var rsa = new RSACryptoServiceProvider())
+            {
+                rsa.ImportParameters(parameters);
+
+                return rsa.Decrypt(data, false);
+            }
+        }
+
         public static byte[] AesEncrypt(byte[] key, byte[] iv, string message)
         {
             using (var aes = new AesCryptoServiceProvider())
@@ -18,9 +48,7 @@ namespace HybridEncryptionExample
                 {
                     using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
                     using (var sw = new StreamWriter(cs))
-                    {
                         sw.Write(message);
-                    }
 
                     return ms.ToArray();
                 }
