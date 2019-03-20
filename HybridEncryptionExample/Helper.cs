@@ -6,13 +6,15 @@ namespace HybridEncryptionExample
 {
     public class Helper
     {
-        public static byte[] GenerateAesIv()
+        public static byte[] GenerateRandom(int size)
         {
-            using (var aes = new AesCryptoServiceProvider())
+            using (var rng = new RNGCryptoServiceProvider())
             {
-                aes.GenerateIV();
+                byte[] bytes = new byte[size];
 
-                return aes.IV;
+                rng.GetBytes(bytes);
+
+                return bytes;
             }
         }
 
@@ -43,7 +45,7 @@ namespace HybridEncryptionExample
                 aes.Key = key;
                 aes.IV = iv;
 
-                using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
+                using (var encryptor = aes.CreateEncryptor())
                 using (var ms = new MemoryStream())
                 {
                     using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
@@ -62,7 +64,7 @@ namespace HybridEncryptionExample
                 aes.Key = key;
                 aes.IV = iv;
 
-                using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
+                using (var decryptor = aes.CreateDecryptor())
                 using (var ms = new MemoryStream(message))
                 using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
                 using (var sr = new StreamReader(cs, Encoding.UTF8))

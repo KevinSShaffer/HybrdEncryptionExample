@@ -20,8 +20,9 @@ namespace HybridEncryptionExample
         public void ReceiveHybridMessage(byte[] rsaEncryptedAesSecret, byte[] aesIv, byte[] aesEncryptedMessage)
         {
             byte[] aesKey = Helper.RsaDecrypt(RsaParameters, rsaEncryptedAesSecret);
+            string message = Helper.AesDecrypt(aesKey, aesIv, aesEncryptedMessage);
 
-            Console.WriteLine(Helper.AesDecrypt(aesKey, aesIv, aesEncryptedMessage));
+            Console.WriteLine(message);
         }
     }
 }

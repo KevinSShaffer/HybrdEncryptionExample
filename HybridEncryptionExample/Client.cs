@@ -1,27 +1,21 @@
-﻿using System.Security.Cryptography;
-
-namespace HybridEncryptionExample
+﻿namespace HybridEncryptionExample
 {
     public class Client
     {
-        public byte[] Secret { get; set; }
+        private byte[] Secret { get; set; }
 
         public Client()
         {
-            using (var aes = new AesCryptoServiceProvider())
-            {
-                aes.GenerateKey();
-
-                Secret = aes.Key;
-            }
+            Secret = Helper.GenerateRandom(32);
         }
 
         public void SendMessage(Server server, string message)
         {
-            byte[] iv = Helper.GenerateAesIv();
+            byte[] iv = Helper.GenerateRandom(16);
             byte[] rsaEncryptedAesKey = Helper.RsaEncrypt(server.PublicParameters, Secret);
+            byte[] aesEncryptedMessage = Helper.AesEncrypt(Secret, iv, message);
 
-            server.ReceiveHybridMessage(rsaEncryptedAesKey, iv, Helper.AesEncrypt(Secret, iv, message));
+            server.ReceiveHybridMessage(rsaEncryptedAesKey, iv, aesEncryptedMessage);
         }
     }
 }
