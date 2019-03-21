@@ -24,7 +24,7 @@ namespace HybridEncryptionExample
             byte[] validationHmac = Helper.GenerateHmac(aesKey, encryptedPacket.AesEncryptedData);
 
             if (!encryptedPacket.Hmac.SequenceEqual(validationHmac))
-                throw new Exception("Data corruption.");
+                throw new CryptographicException("Hmac doesn't match for encrypted packet.");
 
             string message = Helper.AesDecrypt(aesKey, encryptedPacket.Iv, encryptedPacket.AesEncryptedData);
 
