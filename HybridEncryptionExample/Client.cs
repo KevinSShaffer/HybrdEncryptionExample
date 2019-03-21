@@ -12,10 +12,11 @@
         public void SendMessage(Server server, string message)
         {
             byte[] iv = Helper.GenerateRandom(16);
-            byte[] rsaEncryptedAesKey = Helper.RsaEncrypt(server.PublicParameters, Secret);
             byte[] aesEncryptedMessage = Helper.AesEncrypt(Secret, iv, message);
+            byte[] hash = Helper.GenerateHmac(Secret, aesEncryptedMessage);
+            byte[] rsaEncryptedAesKey = Helper.RsaEncrypt(server.PublicParameters, Secret);
 
-            server.ReceiveHybridMessage(rsaEncryptedAesKey, iv, aesEncryptedMessage);
+            server.ReceiveHybridMessage(rsaEncryptedAesKey, iv, aesEncryptedMessage, hash);
         }
     }
 }

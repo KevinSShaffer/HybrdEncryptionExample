@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace HybridEncryptionExample
@@ -17,9 +18,14 @@ namespace HybridEncryptionExample
             }
         }
 
-        public void ReceiveHybridMessage(byte[] rsaEncryptedAesSecret, byte[] aesIv, byte[] aesEncryptedMessage)
+        public void ReceiveHybridMessage(byte[] rsaEncryptedAesSecret, byte[] aesIv, byte[] aesEncryptedMessage, byte[] hash)
         {
             byte[] aesKey = Helper.RsaDecrypt(RsaParameters, rsaEncryptedAesSecret);
+            byte[] validationHash = Helper.GenerateHmac(aesKey, aesEncryptedMessage);
+
+            if (!hash.SequenceEqual(validationHash))
+                throw new Exception("Data corruption.");
+
             string message = Helper.AesDecrypt(aesKey, aesIv, aesEncryptedMessage);
 
             Console.WriteLine(message);

@@ -18,6 +18,12 @@ namespace HybridEncryptionExample
             }
         }
 
+        public static byte[] GenerateHmac(byte[] key, byte[] data)
+        {
+            using (var hmac = new HMACSHA256(key))
+                return hmac.ComputeHash(data);
+        }
+
         public static byte[] RsaEncrypt(RSAParameters parameters, byte[] data)
         {
             using (var rsa = new RSACryptoServiceProvider())
