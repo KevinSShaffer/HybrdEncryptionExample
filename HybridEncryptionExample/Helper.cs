@@ -18,6 +18,34 @@ namespace HybridEncryptionExample
             }
         }
 
+        public static byte[] SignData(RSAParameters privateKey, byte[] data)
+        {
+            using (var rsa = new RSACryptoServiceProvider())
+            {
+                rsa.ImportParameters(privateKey);
+
+                var signer = new RSAPKCS1SignatureFormatter(rsa);
+
+                signer.SetHashAlgorithm("SHA256");
+
+                return signer.CreateSignature(data);
+            }
+        }
+
+        public static bool VerifySignature(RSAParameters publicKey, byte[] signature, byte[] data)
+        {
+            using (var rsa = new RSACryptoServiceProvider())
+            {
+                rsa.ImportParameters(publicKey);
+
+                var verifier = new RSAPKCS1SignatureDeformatter(rsa);
+
+                verifier.SetHashAlgorithm("SHA256");
+
+                return verifier.VerifySignature(data, signature);
+            }
+        }
+
         public static byte[] GenerateHmac(byte[] key, byte[] data)
         {
             using (var hmac = new HMACSHA256(key))
