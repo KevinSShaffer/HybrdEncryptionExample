@@ -13,10 +13,10 @@
         {
             byte[] iv = Helper.GenerateRandom(16);
             byte[] aesEncryptedMessage = Helper.AesEncrypt(Secret, iv, message);
-            byte[] hash = Helper.GenerateHmac(Secret, aesEncryptedMessage);
+            byte[] hmac = Helper.GenerateHmac(Secret, aesEncryptedMessage);
             byte[] rsaEncryptedAesKey = Helper.RsaEncrypt(server.PublicParameters, Secret);
 
-            server.ReceiveHybridMessage(rsaEncryptedAesKey, iv, aesEncryptedMessage, hash);
+            server.ReceiveHybridMessage(new EncryptedPacket(rsaEncryptedAesKey, iv, hmac, aesEncryptedMessage));
         }
     }
 }

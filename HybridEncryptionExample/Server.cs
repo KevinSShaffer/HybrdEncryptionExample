@@ -18,15 +18,15 @@ namespace HybridEncryptionExample
             }
         }
 
-        public void ReceiveHybridMessage(byte[] rsaEncryptedAesSecret, byte[] aesIv, byte[] aesEncryptedMessage, byte[] hash)
+        public void ReceiveHybridMessage(EncryptedPacket encryptedPacket)
         {
-            byte[] aesKey = Helper.RsaDecrypt(RsaParameters, rsaEncryptedAesSecret);
-            byte[] validationHash = Helper.GenerateHmac(aesKey, aesEncryptedMessage);
+            byte[] aesKey = Helper.RsaDecrypt(RsaParameters, encryptedPacket.RsaEncryptedAesKey);
+            byte[] validationHmac = Helper.GenerateHmac(aesKey, encryptedPacket.AesEncryptedData);
 
-            if (!hash.SequenceEqual(validationHash))
+            if (!encryptedPacket.Hmac.SequenceEqual(validationHmac))
                 throw new Exception("Data corruption.");
 
-            string message = Helper.AesDecrypt(aesKey, aesIv, aesEncryptedMessage);
+            string message = Helper.AesDecrypt(aesKey, encryptedPacket.Iv, encryptedPacket.AesEncryptedData);
 
             Console.WriteLine(message);
         }
